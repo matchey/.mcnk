@@ -15,7 +15,7 @@ fi
 
 expect -c "
 set timeout 5
-spawn sudo -k -p password: mount -t cifs //${IP_Garnet}/share /mnt/garnet/share -o vers=1.0
+spawn sudo -k -p password: mount -t cifs -o vers=1.0,uid=$(id -u),gid=$(id -g),dir_mode=0775,file_mode=0664 //${IP_Garnet}/share /mnt/garnet/share
 expect \"password:\" {
 	send \"${SSH_PASS}\n\"
 	expect \"Password for root@//${IP_Garnet}/share:\"
@@ -28,7 +28,7 @@ sleep 0.5s
 
 expect -c "
 set timeout 5
-spawn sudo -k -p password: mount -t cifs //${IP_Garnet}/private /mnt/garnet/private -o vers=1.0
+spawn sudo -k -p password: mount -t cifs -o vers=1.0,uid=$(id -u),gid=$(id -g),dir_mode=0775,file_mode=0664 //${IP_Garnet}/private /mnt/garnet/private
 expect \"password:\" {
 	send \"${SSH_PASS}\n\"
 	expect \"Password for root@//${IP_Garnet}/private:\"
@@ -38,5 +38,6 @@ interact
 "
 # ls /mnt/garnet/
 cd /mnt/garnet/
-ls
-# exec /bin/bash
+ls --color=auto
+exec /bin/bash # ". garnet" is better??
+

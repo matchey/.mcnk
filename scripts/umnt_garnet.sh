@@ -41,5 +41,5 @@ interact
 #     [ -x /usr/bin/clear_console ] && /usr/bin/clear_console -q
 # # fi
 sleep 0.5s
-ls
+ls --color=auto
 
