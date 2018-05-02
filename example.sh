@@ -2,7 +2,11 @@
 
 mkdir "$(cd $(dirname $0) && pwd)/cmd"
 
-cd $(cd $(dirname $0) && pwd)/cmd
+cd $(cd $(dirname $0) && pwd)
+
+git update-index --skip-worktree .mcnk_envs
+
+cd cmd
 
 ln -s ../scripts/calculator.sh calc
 
