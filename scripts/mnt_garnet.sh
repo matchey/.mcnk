@@ -41,3 +41,5 @@ cd /mnt/garnet/
 ls --color=auto
 exec /bin/bash # ". garnet" is better??
 
+#dynperm, noperm らへんのoptionがよくわからん...
+
