@@ -8,5 +8,7 @@ fi
 
 word=$1
 
-grep $1 ~/Downloads/gene-utf8.txt -E -A 1 -wi --color
+filename="$(cd $(dirname $0) && cd .. && pwd)/db/gene-utf8.txt"
+
+grep $1 ${filename} -E -A 1 -wi --color
 
