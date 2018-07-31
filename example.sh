@@ -26,7 +26,7 @@ ln -s ../scripts/interrupt_pts.sh kt
 
 ln -s ../scripts/ls_full.sh lf
 
-ln -s ../scripts/showMyIp.sh mip
+ln -s ../scripts/showMyIP.sh mip
 
 ln -s ../scripts/find_grep.sh search
 
