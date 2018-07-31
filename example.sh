@@ -14,6 +14,8 @@ ln -s ../scripts/getOnIP.sh connection
 
 ln -s ../scripts/ctrl_nocaps.sh ctrl_nocaps
 
+ln -s ../scripts/eng2jpn.sh dict
+
 ln -s ../scripts/mnt_garnet.sh garnet
 
 ln -s ../scripts/host2ip.sh host2ip
@@ -23,6 +25,8 @@ ln -s ../scripts/ip2host.sh ip2host
 ln -s ../scripts/interrupt_pts.sh kt
 
 ln -s ../scripts/ls_full.sh lf
+
+ln -s ../scripts/showMyIp.sh mip
 
 ln -s ../scripts/find_grep.sh search
 
