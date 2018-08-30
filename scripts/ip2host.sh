@@ -10,7 +10,7 @@ fi
 
 FILENAME="/etc/hosts"
 cat $FILENAME | while read LINE;do
-	IFS='	'
+	# IFS='	'
 	set -- $LINE
 	if [ $# -eq 2 ] && [ ${1#192.168.0.} = $sshd_id ] ; then
 		echo $2
