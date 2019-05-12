@@ -1,0 +1,53 @@
+
+#alias refresh="source ~/.bashrc"
+#alias amsonic="export ROS_MASTER_URI=http://192.168.0.194:11311"
+
+alias grep='grep --color=auto'
+
+alias cp="cp -iv"
+alias mv="mv -iv"
+alias rm="rm -i"
+alias del="mv -b --suffix=_$(date +%Y%m%d) -t /Users/matchey/.Trash/"
+# alias del="mv -b --suffix=_$(date +%Y%m%d) -t /home/amsl/.local/share/Trash/files/"
+# alias del="trash-put"
+# alias python3.5.1="source /etc/profile.d/pyenv.sh"
+# alias tis="cd ~/Documents/tis/"
+# alias udacity="cd ~/Documents/udacity/project__runaway_robot/the_final_hunt"
+# alias xopen="xdg-open"
+# alias garnet=". /home/amsl/MyShellScripts/mnt_garnet.sh"
+# alias umnt_g=". /home/amsl/MyShellScripts/umnt_garnet.sh"
+# alias ec2start=". /home/amsl/MyShellScripts/start_instance.sh"
+# alias ec2stop=". /home/amsl/MyShellScripts/stop_instance.sh"
+# alias amsl="/home/amsl/MyShellScripts/ssh_amsl.sh"
+# alias sshh="/home/amsl/MyShellScripts/ssh_192.sh"
+# alias sscp="/home/amsl/MyShellScripts/scp_192.sh"
+# alias search="/home/amsl/MyShellScripts/find_grep.sh"
+#
+# alias graph_slam3d="/home/amsl/AMSL_ros_pkg/mapping/my_g2o/bin/graph_slam3d"
+alias cd..="cd .."
+alias cd...="cd ../../.."
+alias cd....="cd ../.."
+alias cd-="cd -"
+
+alias ls="ls --color"
+alias sl="ls --color"
+
+alias vimc="vim -u ~/.vimrcnk -N"
+alias vimv="vim -O2"
+
+alias hgrep="history | grep"
+
+# function cmk(){
+# 		cpath=$(pwd)
+# 		cd ~/ros_catkin_ws
+# 		catkin_make
+# 		cd $cpath
+# }
+# function catkin_make(){(cd ~/catkin_ws && command catkin_make $@) && source ~/catkin_ws/devel/setup.bash;}
+
+alias cppcd="cd ~/Programs/cpp"
+alias pycd="cd ~/Programs/py"
+alias javacd="cd ~/Programs/java"
+alias luacd="cd ~/Programs/lua"
+alias jscd="cd ~/Programs/JavaScript"
+
