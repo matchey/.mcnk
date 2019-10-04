@@ -37,4 +37,5 @@ ln -s ../scripts/find_grep.sh search
 # ln -s ../scripts/umnt_garnet.sh umnt_g
 
 echo "export PATH=$(pwd):"'${PATH}' >> ~/.bashrc
+# echo ". ~/.mcnk/bashrc/bash_aliases" >> ~/.bash_aliases
 

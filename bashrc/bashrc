@@ -21,7 +21,8 @@ HISTSIZE=10000
 HISTFILESIZE=20000
 HISTTIMEFORMAT='%Y/%m/%d %H:%M:%S '
 cdignore=`echo cd{,' '{-,..*}}:`
-HISTIGNORE=ls:history*:${cdignore//: /:}:fg:rm*:pwd
+HISTIGNORE=ls:history*:${cdignore//: /:}:fg:rm*:pwd:hgrep*:pd:b:f:u:m:gm
+
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -75,6 +76,10 @@ xterm*|rxvt*)
 *)
     ;;
 esac
+
+# if bash ver > 4.0
+PROMPT_DIRTRIM=3
+# PS1='\u@\h:$(echo "\w" | sed -e "/^.\{30,\}$/s/^\(.\{15\}\).*\(.\{15\}\)$/\1...\2/")\$ '
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
@@ -150,5 +155,5 @@ export PATH="/Applications/CMake.app/Contents/bin":"$PATH"
 #save last working directory when login shell exits
 source $HOME/.lastpwd
 export OLDPWD=$lastpwd
-trap $HOME/Scripts/save_pwd.sh EXIT
+trap $HOME/.mcnk/scripts/save_pwd.sh EXIT
 
