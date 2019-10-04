@@ -16,6 +16,10 @@ cat $FILENAME | while read LINE;do
 		echo $2
 		exit
 	fi
+	if [ $# -eq 2 ] && [ ${1#172.16.76.} = $sshd_id ] ; then
+		echo $2
+		exit
+	fi
 done
 
 # echo "_"${sshd_id#192.168.0.}

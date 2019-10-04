@@ -6,14 +6,21 @@ alias grep='grep --color=auto'
 
 alias cp="cp -iv"
 alias mv="mv -iv"
-alias rm="rm -i"
-alias del="mv -b --suffix=_$(date +%Y%m%d) -t /Users/matchey/.Trash/"
-# alias del="mv -b --suffix=_$(date +%Y%m%d) -t /home/amsl/.local/share/Trash/files/"
+function rm_i(){
+    if [ $# -lt 6 ];then
+        rm -i $@
+    else
+        rm -I -v $@
+    fi
+}
+alias rm="rm_i"
+# alias del="mv -b --suffix=_$(date +%Y%m%d) -t /Users/matchey/.Trash/"
+alias del="mv -b --suffix=_$(date +%Y%m%d) -t /home/machinaka/.local/share/Trash/files/"
 # alias del="trash-put"
 # alias python3.5.1="source /etc/profile.d/pyenv.sh"
 # alias tis="cd ~/Documents/tis/"
 # alias udacity="cd ~/Documents/udacity/project__runaway_robot/the_final_hunt"
-# alias xopen="xdg-open"
+alias xopen="xdg-open"
 # alias garnet=". /home/amsl/MyShellScripts/mnt_garnet.sh"
 # alias umnt_g=". /home/amsl/MyShellScripts/umnt_garnet.sh"
 # alias ec2start=". /home/amsl/MyShellScripts/start_instance.sh"
@@ -28,26 +35,80 @@ alias cd..="cd .."
 alias cd...="cd ../../.."
 alias cd....="cd ../.."
 alias cd-="cd -"
+alias b='if [[ $l -le 1 ]]; then l=1; if [[ $f2 -eq 1 ]]; then f2=;if [ "$la" != "$PWD" ]; then h=$PWD:$h;la=$PWD;fi;fi;fi;((l=l+1));f=1;cd'
+alias f='f=1;if [[ $l -le 1 ]]; then l=1;f=;else ((l=l-1));cd;fi'
+alias cd='((l2=l+1));if [[ $f -eq 1 ]];then f=;t=`echo $h|cut -f$l -d:`;else f2=1;if [ "$la" != "$PWD" ]; then h=$PWD:`echo $h|cut -f$l2- -d:`;la=$PWD;fi;l=0;t=;fi;cd $t'
+alias m='MARKEDPWD=$PWD'
+# alias gm='cd $MARKEDPWD'
+function gm(){
+    if [ -n "$MARKEDPWD" ];then
+        cd $MARKEDPWD
+    fi
+}
 
 alias ls="ls --color"
 alias sl="ls --color"
 
+alias pbcopy='xsel --clipboard --input'
+alias pbpaste='xsel --clipboard --output'
+alias pwdcp='echo -n $PWD | xsel --clipboard --input; echo -n $PWD | xsel -i'
+
 alias vimc="vim -u ~/.vimrcnk -N"
-alias vimv="vim -O2"
+# alias vimv="vim -O2"
+function vimv(){
+    if [ $# -eq 2 ];then
+        \vim -O2 $@
+    else
+        \vim $@
+    fi
+}
+alias vim="vimv"
 
 alias hgrep="history | grep"
 
-# function cmk(){
-# 		cpath=$(pwd)
-# 		cd ~/ros_catkin_ws
-# 		catkin_make
-# 		cd $cpath
-# }
-# function catkin_make(){(cd ~/catkin_ws && command catkin_make $@) && source ~/catkin_ws/devel/setup.bash;}
+alias off="xset dpms force standby"
 
-alias cppcd="cd ~/Programs/cpp"
-alias pycd="cd ~/Programs/py"
-alias javacd="cd ~/Programs/java"
-alias luacd="cd ~/Programs/lua"
-alias jscd="cd ~/Programs/JavaScript"
+function pd(){
+    if [ $# -gt 0 ];then
+        PROMPT_DIRTRIM=$1
+    elif [ -z $PROMPT_DIRTRIM ];then
+        PROMPT_DIRTRIM=3
+    else
+        PROMPT_DIRTRIM=""
+    fi
+}
+
+function u(){
+    tmplast=$OLDPWD
+    cd ..
+    OLDPWD=$tmplast
+}
+
+function vimgitshow(){
+    git show "$1" | vim -M -c 'set nomod' -c "file ${1##*/}" -c 'filetype detect' -
+}
+
+alias gpuoff='export CUDA_VISIBLE_DIVICES=""'
+alias gpuon='unset CUDA_VISIBLE_DIVICES'
+
+function cmk(){
+		cpath=$(pwd)
+		cd ~/ros_catkin_ws
+		catkin_make
+		cd $cpath
+}
+function rossource(){
+		cpath=$(pwd)
+		cd ~/ros_catkin_ws
+		source devel/setup.bash
+		cd $cpath
+}
+
+# alias cppcd="cd ~/Programs/cpp"
+# alias pycd="cd ~/Programs/py"
+# alias javacd="cd ~/Programs/java"
+# alias luacd="cd ~/Programs/lua"
+# alias jscd="cd ~/Programs/JavaScript"
+
+source $(cd $(dirname $BASH_SOURCE) && pwd)/../local/bashrc/bash_aliases
 

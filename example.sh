@@ -16,7 +16,7 @@ ln -s ../scripts/ctrl_nocaps.sh ctrl_nocaps
 
 ln -s ../scripts/eng2jpn.sh dict
 
-ln -s ../scripts/mnt_garnet.sh garnet
+# ln -s ../scripts/mnt_garnet.sh garnet
 
 ln -s ../scripts/host2ip.sh host2ip
 
@@ -30,11 +30,11 @@ ln -s ../scripts/showMyIP.sh mip
 
 ln -s ../scripts/find_grep.sh search
 
-ln -s ../scripts/scp_192.sh sscp
+# ln -s ../scripts/scp_192.sh sscp
 
-ln -s ../scripts/ssh_192.sh sshh
+# ln -s ../scripts/ssh_192.sh sshh
 
-ln -s ../scripts/umnt_garnet.sh umnt_g
+# ln -s ../scripts/umnt_garnet.sh umnt_g
 
 echo "export PATH=$(pwd):"'${PATH}' >> ~/.bashrc
 

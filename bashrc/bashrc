@@ -20,7 +20,8 @@ shopt -s histappend
 HISTSIZE=10000
 HISTFILESIZE=20000
 HISTTIMEFORMAT='%Y/%m/%d %H:%M:%S '
-HISTIGNORE=ls:history*:cd:fg:rm*
+cdignore=`echo cd{,' '{-,..*}}:`
+HISTIGNORE=ls:history*:${cdignore//: /:}:fg:rm*:pwd
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
