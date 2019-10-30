@@ -70,6 +70,8 @@ function vimv(){
 }
 alias vim="vimv"
 
+alias vert='\vim -c "vert terminal ++close" -c "wincmd p" -c "vert terminal ++close" -c "wincmd p" -c "q" -c "wincmd h"'
+
 alias hgrep="history | grep"
 
 alias off="xset dpms force standby"

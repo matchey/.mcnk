@@ -21,7 +21,7 @@ HISTSIZE=10000
 HISTFILESIZE=20000
 HISTTIMEFORMAT='%Y/%m/%d %H:%M:%S '
 cdignore=`echo cd{,' '{-,..*}}:`
-HISTIGNORE=ls:history*:${cdignore//: /:}:fg:rm*:pwd:hgrep*:pd:b:f:u:m:gm
+HISTIGNORE=ls:history*:${cdignore//: /:}:fg:rm*:pwd:hgrep*:pd:b:f:u:m:gm:vert
 
 
 # check the window size after each command and, if necessary,
