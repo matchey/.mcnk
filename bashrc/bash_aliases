@@ -78,6 +78,8 @@ function vimterm(){
   elif [ $# -eq 1 ];then
     if [ $1 -eq 2 ];then
       \vim -c "vnew" -c "windo terminal ++close ++curwin" -c "wincmd t"
+    elif [ $1 -eq 3 ];then
+      \vim -c "vnew" -c "vnew" -c "windo terminal ++close ++curwin" -c "wincmd t"
     elif [ $1 -eq 4 ];then
       \vim -c "vnew" -c "windo new" -c "windo terminal ++close ++curwin" -c "wincmd t"
     elif [ $1 -eq 6 ];then
