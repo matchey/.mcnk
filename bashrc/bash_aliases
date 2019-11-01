@@ -8,9 +8,9 @@ alias cp="cp -iv"
 alias mv="mv -iv"
 function rm_i(){
     if [ $# -lt 6 ];then
-        rm -i $@
+        \rm -i $@
     else
-        rm -I -v $@
+        \rm -I -v $@
     fi
 }
 alias rm="rm_i"
@@ -145,5 +145,7 @@ function rossource(){
 # alias luacd="cd ~/Programs/lua"
 # alias jscd="cd ~/Programs/JavaScript"
 
-source $(cd $(dirname $BASH_SOURCE) && pwd)/../local/bashrc/bash_aliases
+if [ -f $(cd $(dirname $BASH_SOURCE) && pwd)/../local/bashrc/bash_aliases ]; then
+  source $(cd $(dirname $BASH_SOURCE) && pwd)/../local/bashrc/bash_aliases
+fi
 

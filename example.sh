@@ -1,10 +1,15 @@
 #!/bin/bash
 
-mkdir "$(cd $(dirname $0) && pwd)/cmd"
+
+if [ ! -d "$(cd $(dirname $0) && pwd)/cmd" ]; then
+  mkdir "$(cd $(dirname $0) && pwd)/cmd"
+fi
 
 cd $(cd $(dirname $0) && pwd)
 
 git update-index --skip-worktree .mcnk_envs
+
+mcnkdir=$(pwd)
 
 cd cmd
 
@@ -36,6 +41,19 @@ ln -s ../scripts/find_grep.sh search
 
 # ln -s ../scripts/umnt_garnet.sh umnt_g
 
-echo "export PATH=$(pwd):"'${PATH}' >> ~/.bashrc
+# echo "export PATH=$(pwd):"'${PATH}' >> ~/.bashrc
 # echo ". ~/.mcnk/bashrc/bash_aliases" >> ~/.bash_aliases
+# echo <<EOS >> ~/.bashrc
+
+if [ ! -f ${HOME}/.lastpwd ]; then
+  touch ${HOME}/.lastpwd
+fi
+
+cat << EOS >> ~/.bashrc
+# mcnk
+if [ -f ${mcnkdir}/bashrc/bashrc ]; then
+    . ${mcnkdir}/bashrc/bashrc
+fi
+
+EOS
 
