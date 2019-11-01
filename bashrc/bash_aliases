@@ -73,21 +73,19 @@ function vimv(){
 alias vim="vimv"
 
 function vimterm(){
-  history -a
-  clear
   if [ $# -eq 0 ];then
-      \vim -c "terminal ++close ++curwin"
+      exec \vim -c "terminal ++close ++curwin"
   elif [ $# -eq 1 ];then
     if [ $1 -eq 2 ];then
-      \vim -c "vnew" -c "windo terminal ++close ++curwin" -c "wincmd t"
+      exec \vim -c "vnew" -c "windo terminal ++close ++curwin" -c "wincmd t"
     elif [ $1 -eq 3 ];then
-      \vim -c "vnew" -c "vnew" -c "windo terminal ++close ++curwin" -c "wincmd t"
+      exec \vim -c "vnew" -c "vnew" -c "windo terminal ++close ++curwin" -c "wincmd t"
     elif [ $1 -eq 4 ];then
-      \vim -c "vnew" -c "windo new" -c "windo terminal ++close ++curwin" -c "wincmd t"
+      exec \vim -c "vnew" -c "windo new" -c "windo terminal ++close ++curwin" -c "wincmd t"
     elif [ $1 -eq 6 ];then
-      \vim -c "new" -c "new" -c "windo vnew" -c "windo terminal ++close ++curwin" -c "wincmd t"
+      exec \vim -c "new" -c "new" -c "windo vnew" -c "windo terminal ++close ++curwin" -c "wincmd t"
     elif [ $1 -eq 9 ];then
-      \vim -c "vnew" -c "vnew" -c "windo new" -c "windo new" -c "bd 1 2 3" -c "wincmd b" -c "wincmd k" -c "wincmd =" -c "windo terminal ++close ++curwin" -c "wincmd t"
+      exec \vim -c "vnew" -c "vnew" -c "windo new" -c "windo new" -c "bd 1 2 3" -c "wincmd b" -c "wincmd k" -c "wincmd =" -c "windo terminal ++close ++curwin" -c "wincmd t"
     fi
   fi
 }
