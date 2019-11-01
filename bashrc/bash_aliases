@@ -53,6 +53,8 @@ alias pbcopy='xsel --clipboard --input'
 alias pbpaste='xsel --clipboard --output'
 alias pwdcp='echo -n $PWD | xsel --clipboard --input; echo -n $PWD | xsel -i'
 
+alias pf="ps f o pid,tname,bsdstart,command"
+
 alias vimc="vim -u ~/.vimrcnk -N"
 # alias vimv="vim -O2"
 function vimv(){
