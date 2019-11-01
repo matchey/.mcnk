@@ -21,7 +21,7 @@ HISTSIZE=10000
 HISTFILESIZE=20000
 HISTTIMEFORMAT='%Y/%m/%d %H:%M:%S '
 cdignore=`echo cd{,' '{-,..*}}:`
-HISTIGNORE=ls:history*:${cdignore//: /:}:fg:rm*:pwd:hgrep*:pd:b:f:u:m:gm:vert:clear
+HISTIGNORE=ls:history*:${cdignore//: /:}:fg:rm*:pwd:hgrep*:pd:b:f:u:m:gm:vert:clear:pf
 
 
 # check the window size after each command and, if necessary,
@@ -137,6 +137,7 @@ export PATH=/usr/local:$PATH
 
 # xmodmap /home/amsl/.Xmodmap
 
+# mcnk
 export PATH=/Users/matchey/.mcnk/cmd:$PATH
 
 export MANPATH=/usr/local/share/man:${MANPATH}
@@ -156,4 +157,8 @@ export PATH="/Applications/CMake.app/Contents/bin":"$PATH"
 source $HOME/.lastpwd
 export OLDPWD=$lastpwd
 trap $HOME/.mcnk/scripts/save_pwd.sh EXIT
+
+if [ -f $HOME/.mcnk/bashrc/bash_aliases ]; then
+    . $HOME/.mcnk/bashrc/bash_aliases
+fi
 
