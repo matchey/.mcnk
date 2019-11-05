@@ -138,7 +138,7 @@ export PATH=/usr/local:$PATH
 # xmodmap /home/amsl/.Xmodmap
 
 # mcnk
-export PATH=/Users/matchey/.mcnk/cmd:$PATH
+export PATH=${HOME}/.mcnk/cmd:$PATH
 
 export MANPATH=/usr/local/share/man:${MANPATH}
 export PATH=/usr/local/opt/coreutils/libexec/gnubin:${PATH}
