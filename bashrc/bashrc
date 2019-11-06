@@ -21,7 +21,7 @@ HISTSIZE=10000
 HISTFILESIZE=20000
 HISTTIMEFORMAT='%Y/%m/%d %H:%M:%S '
 cdignore=`echo cd{,' '{-,..*}}:`
-HISTIGNORE=ls:history*:${cdignore//: /:}:fg:rm*:pwd:hgrep*:pd:b:f:u:m:gm:vert:clear:pf
+HISTIGNORE=ls:history*:${cdignore//: /:}:fg:rm*:pwd:hgrep*:pd:b:f:u:m:gm:vert:clear:pf:${HISTIGNORE}
 
 
 # check the window size after each command and, if necessary,
@@ -160,5 +160,9 @@ trap $HOME/.mcnk/scripts/save_pwd.sh EXIT
 
 if [ -f $HOME/.mcnk/bashrc/bash_aliases ]; then
     . $HOME/.mcnk/bashrc/bash_aliases
+fi
+
+if [ -f $HOME/.mcnk/bashrc/bash_completion ]; then
+    . $HOME/.mcnk/bashrc/bash_completion
 fi
 

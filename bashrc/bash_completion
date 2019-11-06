@@ -1,0 +1,11 @@
+
+_vimsessions()
+{
+  sessdir="$HOME/.vimcnk/.sessions/"
+  if [ -d ${sessdir} ]; then
+    COMPREPLY=( $(compgen -W "$(ls ${sessdir})" ${COMP_WORDS[COMP_CWORD]} ) )
+  fi
+}
+
+complete -F _vimsessions vims
+

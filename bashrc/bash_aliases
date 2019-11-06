@@ -56,6 +56,9 @@ alias pwdcp='echo -n $PWD | xsel --clipboard --input; echo -n $PWD | xsel -i'
 alias pf="ps f o pid,tname,bsdstart,command --sort bsdstart"
 
 alias vimc="vim -u ~/.vimrcnk -N"
+function vims(){
+  \vim -c "LoadSession $1"
+}
 # alias vimv="vim -O2"
 function vimv(){
     if [ $# -eq 2 ];then
