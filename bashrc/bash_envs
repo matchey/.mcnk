@@ -1,0 +1,4 @@
+
+# export SCRIPT_PACKAGE_PATH="${HOME}/.mcnk/scripts":"${SCRIPT_PACKAGE_PATH}"
+export SCRIPT_PACKAGE_PATH="${HOME}/.mcnk/scripts"
+

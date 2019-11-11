@@ -53,6 +53,9 @@ alias pbcopy='xsel --clipboard --input'
 alias pbpaste='xsel --clipboard --output'
 alias pwdcp='echo -n $PWD | xsel --clipboard --input; echo -n $PWD | xsel -i'
 
+alias cpcd='cd "$(xsel --clipboard --output)"'
+alias cdcp='cd "$(xsel --clipboard --output)"'
+
 alias pf="ps f o pid,tname,bsdstart,command --sort bsdstart"
 
 alias vimc="vim -u ~/.vimrcnk -N"
@@ -119,6 +122,8 @@ function u(){
     echo "$OLDPWD -> $PWD"
   fi
 }
+
+alias setdate='sudo date --set @"$(wget -q https://ntp-a1.nict.go.jp/cgi-bin/jst -O - | sed -n 4p | cut -d. -f1)"'
 
 function vimgitshow(){
     git show "$1" | vim -M -c 'set nomod' -c "file ${1##*/}" -c 'filetype detect' -
