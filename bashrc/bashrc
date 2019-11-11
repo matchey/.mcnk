@@ -158,6 +158,10 @@ source $HOME/.lastpwd
 export OLDPWD=$lastpwd
 trap $HOME/.mcnk/scripts/save_pwd.sh EXIT
 
+if [ -f $HOME/.mcnk/bashrc/bash_envs ]; then
+    . $HOME/.mcnk/bashrc/bash_envs
+fi
+
 if [ -f $HOME/.mcnk/bashrc/bash_aliases ]; then
     . $HOME/.mcnk/bashrc/bash_aliases
 fi
