@@ -17,7 +17,7 @@ function rm_i(){
 }
 alias rm="rm_i"
 # alias del="mv -b --suffix=_$(date +%Y%m%d) -t /Users/matchey/.Trash/"
-alias del="mv -b --suffix=_$(date +%Y%m%d) -t /home/machinaka/.local/share/Trash/files/"
+alias del="mv -b --suffix=_$(date +%Y%m%d) -t ${HOME}/.local/share/Trash/files/"
 # alias del="trash-put"
 # alias python3.5.1="source /etc/profile.d/pyenv.sh"
 # alias tis="cd ~/Documents/tis/"
