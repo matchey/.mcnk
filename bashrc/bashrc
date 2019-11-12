@@ -170,3 +170,8 @@ if [ -f $HOME/.mcnk/bashrc/bash_completion ]; then
     . $HOME/.mcnk/bashrc/bash_completion
 fi
 
+# if [[ "${VIM_EDITERM_SETUP}" != "" ]];then
+#   source "${VIM_EDITERM_SETUP}"
+# fi
+
+
