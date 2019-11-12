@@ -27,7 +27,7 @@ XPOS="xmousepos"
 #CENTER_POS="2240 600"
 #RIGHT_POS="4160 540"
 #LEFT_POS="640 512"
-source ${HOME}/.bash_envs
+source ${HOME}/.mcnk/bashrc/bash_envs
 source ${SCRIPT_PACKAGE_PATH}/mouse_mv_pos.sh
 
 ###############################################################################

@@ -1,4 +1,6 @@
 
+funcdir="$(cd $(dirname ${BASH_SOURCE:-$0}) && pwd)/functions"
+
 #alias refresh="source ~/.bashrc"
 #alias amsonic="export ROS_MASTER_URI=http://192.168.0.194:11311"
 
@@ -58,43 +60,11 @@ alias cdcp='cd "$(xsel --clipboard --output)"'
 
 alias pf="ps f o pid,tname,bsdstart,command --sort bsdstart"
 
+source ${funcdir}/vim_in_vimterm.sh
 alias vimc="vim -u ~/.vimrcnk -N"
-function vims(){
-  \vim -c "LoadSession $1"
-}
 # alias vimv="vim -O2"
-function vimv(){
-    if [ $# -eq 2 ];then
-        \vim -O2 $@
-    elif [ $# -eq 3 ];then
-        \vim -O2 $1 $2 -c "New $3" -c "tabnext"
-    elif [ $# -eq 4 ];then
-        \vim -O2 $1 $2 -c "New $3 $4" -c "tabnext"
-    elif [ $# -eq 6 ];then
-        \vim -O2 $1 $2 -c "New $3 $4" -c "New $5 $6" -c "tabnext"
-    else
-        \vim $@
-    fi
-}
 alias vim="vimv"
-
-function vimterm(){
-  if [ $# -eq 0 ];then
-      exec \vim -c "terminal ++close ++curwin"
-  elif [ $# -eq 1 ];then
-    if [ $1 -eq 2 ];then
-      exec \vim -c "vnew" -c "windo terminal ++close ++curwin" -c "wincmd t"
-    elif [ $1 -eq 3 ];then
-      exec \vim -c "vnew" -c "vnew" -c "windo terminal ++close ++curwin" -c "wincmd t"
-    elif [ $1 -eq 4 ];then
-      exec \vim -c "vnew" -c "windo new" -c "windo terminal ++close ++curwin" -c "wincmd t"
-    elif [ $1 -eq 6 ];then
-      exec \vim -c "new" -c "new" -c "windo vnew" -c "windo terminal ++close ++curwin" -c "wincmd t"
-    elif [ $1 -eq 9 ];then
-      exec \vim -c "vnew" -c "vnew" -c "windo new" -c "windo new" -c "bd 1 2 3" -c "wincmd b" -c "wincmd k" -c "wincmd =" -c "windo terminal ++close ++curwin" -c "wincmd t"
-    fi
-  fi
-}
+alias vim="vimTerm"
 # alias vert='history -a; \vim -c "vert terminal ++close" -c "wincmd p" -c "vert terminal ++close" -c "wincmd p" -c "q" -c "wincmd h"'
 alias vert="vimterm 2"
 
