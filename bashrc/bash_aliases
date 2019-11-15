@@ -82,16 +82,8 @@ function pd(){
     fi
 }
 
-function u(){
-  tmplast=$OLDPWD
-  n=$1
-  cd `eval printf ../"%.s" {1.."${n}"}`
-  if [ $# -eq 0 ];then
-    OLDPWD=$tmplast
-  else
-    echo "$OLDPWD -> $PWD"
-  fi
-}
+source ${funcdir}/cd_upper.sh
+alias u="upper_dir"
 
 alias setdate='sudo date --set @"$(wget -q https://ntp-a1.nict.go.jp/cgi-bin/jst -O - | sed -n 4p | cut -d. -f1)"'
 
