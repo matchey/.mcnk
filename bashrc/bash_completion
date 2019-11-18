@@ -10,9 +10,12 @@ complete -F _vimsessions vims
 
 _upper_dir()
 {
-  if [ -d ${sessdir} ]; then
-    COMPREPLY=( $(compgen -W "$(find ../ -maxdepth 1 -type d)" ${COMP_WORDS[COMP_CWORD]} ) )
-  fi
+  COMPREPLY=( $(compgen -W "$(find ../ -maxdepth 1 -type d)" ${COMP_WORDS[COMP_CWORD]} ) )
 }
 complete -F _upper_dir u
+
+
+if [ -f $(cd $(dirname $BASH_SOURCE) && pwd)/../local/bashrc/bash_completion ]; then
+  source $(cd $(dirname $BASH_SOURCE) && pwd)/../local/bashrc/bash_completion
+fi
 
