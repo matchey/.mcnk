@@ -1,4 +1,4 @@
 #!/bin/bash
 
-echo lastpwd=$PWD > ~/.lastpwd
+[ $PWD != $HOME ] && echo lastpwd=$PWD > ~/.lastpwd
 
