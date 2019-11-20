@@ -68,6 +68,9 @@ alias vim="vimTerm"
 # alias vert='history -a; \vim -c "vert terminal ++close" -c "wincmd p" -c "vert terminal ++close" -c "wincmd p" -c "q" -c "wincmd h"'
 alias vert="vimterm 2"
 
+source ${funcdir}/vim_globstar.sh
+alias vimg="vim_globstar"
+
 alias hgrep="history | grep"
 
 alias off="xset dpms force standby"

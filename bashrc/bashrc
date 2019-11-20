@@ -153,6 +153,16 @@ export PATH="/Applications/CMake.app/Contents/bin":"$PATH"
 #for rbrnv
 # eval "$(rbenv init -)"
 
+# shpt settings
+shopt -s autocd
+# shopt -s cdable_vars
+# shopt -s cdspell
+# shopt -s dotglob
+# shopt -u extglob
+# shopt -s globstar
+# shopt -s nocaseglob
+# shopt -s nocasematch
+
 #save last working directory when login shell exits
 source $HOME/.lastpwd
 export OLDPWD=$lastpwd
@@ -173,5 +183,4 @@ fi
 # if [[ "${VIM_EDITERM_SETUP}" != "" ]];then
 #   source "${VIM_EDITERM_SETUP}"
 # fi
-
 
