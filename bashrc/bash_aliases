@@ -22,15 +22,6 @@ alias del="mv -b --suffix=_$(date +%Y%m%d) -t ${HOME}/.local/share/Trash/files/"
 # alias python3.5.1="source /etc/profile.d/pyenv.sh"
 # alias tis="cd ~/Documents/tis/"
 # alias udacity="cd ~/Documents/udacity/project__runaway_robot/the_final_hunt"
-alias xopen="xdg-open"
-# alias garnet=". /home/amsl/MyShellScripts/mnt_garnet.sh"
-# alias umnt_g=". /home/amsl/MyShellScripts/umnt_garnet.sh"
-# alias ec2start=". /home/amsl/MyShellScripts/start_instance.sh"
-# alias ec2stop=". /home/amsl/MyShellScripts/stop_instance.sh"
-# alias amsl="/home/amsl/MyShellScripts/ssh_amsl.sh"
-# alias sshh="/home/amsl/MyShellScripts/ssh_192.sh"
-# alias sscp="/home/amsl/MyShellScripts/scp_192.sh"
-# alias search="/home/amsl/MyShellScripts/find_grep.sh"
 #
 # alias graph_slam3d="/home/amsl/AMSL_ros_pkg/mapping/my_g2o/bin/graph_slam3d"
 alias cd..="cd .."
@@ -57,6 +48,9 @@ alias pwdcp='echo -n $PWD | xsel --clipboard --input; echo -n $PWD | xsel -i'
 
 alias cpcd='cd "$(xsel --clipboard --output)"'
 alias cdcp='cd "$(xsel --clipboard --output)"'
+
+# source ${funcdir}/substitute_precmd.sh
+# alias s="substitutePreCmd"
 
 alias pf="ps f o pid,tname,bsdstart,command --sort bsdstart"
 
@@ -108,6 +102,7 @@ function rossource(){
 		cd ~/ros_catkin_ws
 		source devel/setup.bash
 		cd $cpath
+    export ROS_WORKSPACE=~/ros_catkin_ws
 }
 
 # alias cppcd="cd ~/Programs/cpp"
