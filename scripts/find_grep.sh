@@ -19,6 +19,6 @@ else
 	exit
 fi
 
-find . -maxdepth $maxdepth -name "*" -type f | xargs fgrep -i "$search_word" --color 2>/dev/null
+find . -maxdepth $maxdepth -name "*" -type f | xargs fgrep -I -i "$search_word" --color 2>/dev/null
 
 
