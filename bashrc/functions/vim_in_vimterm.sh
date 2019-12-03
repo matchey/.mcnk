@@ -27,7 +27,7 @@ function vimv(){
     fi
 }
 
-function vertNTermCmd(){
+function s:vertNTermCmd(){
   cmd=""
   if [ $# -eq 0 ];then
       echo -c "terminal ++close ++curwin"
