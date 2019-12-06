@@ -12,7 +12,7 @@ _upper_dir()
 {
   COMPREPLY=( $(compgen -W "$(find ../ -maxdepth 1 -type d)" ${COMP_WORDS[COMP_CWORD]} ) )
 }
-complete -F _upper_dir u
+complete -o nospace -o dirnames -o filenames -F _upper_dir u
 
 
 if [ -f $(cd $(dirname $BASH_SOURCE) && pwd)/../local/bashrc/bash_completion ]; then
