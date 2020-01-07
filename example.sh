@@ -50,6 +50,7 @@ if [ ! -f ${HOME}/.lastpwd ]; then
 fi
 
 cat << EOS >> ~/.bashrc
+
 # mcnk
 if [ -f ${mcnkdir}/bashrc/bashrc ]; then
     . ${mcnkdir}/bashrc/bashrc

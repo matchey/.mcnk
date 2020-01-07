@@ -180,6 +180,10 @@ if [ -f $HOME/.mcnk/bashrc/bash_completion ]; then
     . $HOME/.mcnk/bashrc/bash_completion
 fi
 
+if [ -f $HOME/.mcnk/bashrc/inputrc ]; then
+    . $HOME/.mcnk/bashrc/inputrc
+fi
+
 if [ -f $HOME/.mcnk/local/bashrc/bashrc ]; then
     . $HOME/.mcnk/local/bashrc/bashrc
 fi
