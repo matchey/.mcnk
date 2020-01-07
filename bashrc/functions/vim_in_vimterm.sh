@@ -20,6 +20,8 @@ function vimv(){
         \vim -O2 $1 $2 -c "New $3" -c "tabnext"
     elif [ $# -eq 4 ];then
         \vim -O2 $1 $2 -c "New $3 $4" -c "tabnext"
+    elif [ $# -eq 5 ];then
+        \vim -O2 $1 $2 -c "New $3 $4" -c "New $5" -c "tabnext"
     elif [ $# -eq 6 ];then
         \vim -O2 $1 $2 -c "New $3 $4" -c "New $5 $6" -c "tabnext"
     else
