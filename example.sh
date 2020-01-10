@@ -35,6 +35,8 @@ ln -s ../scripts/showMyIP.sh mip
 
 ln -s ../scripts/find_grep.sh search
 
+ln -s ../scripts/idle_handle_mouse.sh expand_mouse
+
 # ln -s ../scripts/scp_192.sh sscp
 
 # ln -s ../scripts/ssh_192.sh sshh
