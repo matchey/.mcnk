@@ -1,6 +1,8 @@
 #!/bin/bash
 
-mouse_name="Master 2S"
+# mouse_name="Master 2S"
+# mouse_name="Logitech"
+mouse_name="M705"
 
 ids=($(xinput list | grep "${mouse_name}" | grep -o id=[0-9]*))
 

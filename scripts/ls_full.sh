@@ -1,6 +1,10 @@
 #!/bin/bash
 
-list=(`ls "$@" | xargs`)
-
-for i in ${list[@]}; do echo "`pwd`/$i"; done
+for arg in "${@:-.}"; do
+  if [ -d "$arg" ]; then
+    realpath -s "$arg"/*
+  else
+    realpath -s "$arg"
+  fi
+done
 

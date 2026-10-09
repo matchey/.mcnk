@@ -13,20 +13,42 @@ function vims(){
   \vim -c "LoadSession $1"
 }
 
-function vimv(){
-    if [ $# -eq 2 ];then
-        \vim -O2 $@
-    elif [ $# -eq 3 ];then
-        \vim -O2 $1 $2 -c "New $3" -c "tabnext"
-    elif [ $# -eq 4 ];then
-        \vim -O2 $1 $2 -c "New $3 $4" -c "tabnext"
-    elif [ $# -eq 5 ];then
-        \vim -O2 $1 $2 -c "New $3 $4" -c "New $5" -c "tabnext"
-    elif [ $# -eq 6 ];then
-        \vim -O2 $1 $2 -c "New $3 $4" -c "New $5 $6" -c "tabnext"
-    else
-        \vim $@
+function cvim(){
+    if [ ! -f "CMakeLists.txt" -o ! -f "package.xml" ];then
+      return
     fi
+    # maxdepth=3
+    # cppfiles=`find . -maxdepth $maxdepth -name "*.cpp"`
+    # cppdirs=`find . -maxdepth $maxdepth -name "src"`
+    # echo $cppfiles
+    # echo $cppdirs
+    if [ $# -eq 1 ];then
+      \vim -O2 include/*/$1.h src/$1.cpp
+    fi
+}
+
+function vimv(){
+  if [[ "$1" == "-R" ]]; then
+    cmd="\view"
+    shift 1
+  else
+    cmd="\vim"
+  fi
+  if [ $# -le 1 ];then
+    cmd+=" $@"
+  else
+    cmd+=" -O2 $1 $2"
+    shift 2
+    local f1 f2
+    while f1=$1 f2=$2; shift 2;do
+      cmd+=" -c 'New $f1 $f2'"
+    done
+    if [[ $(( $# & 1)) = 1 ]]; then
+      cmd+=" -c 'New ${@: -1}' "
+    fi
+    cmd+=" -c tabnext"
+  fi
+  eval $cmd
 }
 
 function s:vertNTermCmd(){
