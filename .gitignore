@@ -1,2 +1,4 @@
 cmd/
+local/
+!local/.gitkeep
 .mcnk_envs

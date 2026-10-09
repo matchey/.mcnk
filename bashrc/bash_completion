@@ -14,6 +14,59 @@ _upper_dir()
 }
 complete -o nospace -o dirnames -o filenames -F _upper_dir u
 
+_byobu()
+{
+  COMP_WORDBREAKS=${COMP_WORDBREAKS//\:}
+  if [[ `ss -l | grep tmux` != "" ]];then
+    case "$3" in
+    -t)
+      COMPREPLY=( $(compgen -W "$(byobu ls | cut -d':' -f1 | grep -v '^_' )" ${COMP_WORDS[COMP_CWORD]} ) );;
+    -s)
+      COMPREPLY=( $(compgen -W "" ${COMP_WORDS[COMP_CWORD]} ) );;
+    a | kill-session)
+      COMPREPLY=( $(compgen -W "-t" -- ${COMP_WORDS[COMP_CWORD]} ) );;
+    new)
+      COMPREPLY=( $(compgen -W "-s" -- ${COMP_WORDS[COMP_CWORD]} ) );;
+    *)
+      COMPREPLY=( $(compgen -W "new list-session kill-session a" ${COMP_WORDS[COMP_CWORD]} ) );;
+    esac
+  else
+    case "$3" in
+    new)
+      COMPREPLY=( $(compgen -W "-s" -- ${COMP_WORDS[COMP_CWORD]} ) );;
+    byobu)
+      COMPREPLY=( $(compgen -W "new" ${COMP_WORDS[COMP_CWORD]} ) );;
+    esac
+  fi
+}
+complete -F _byobu byobu
+
+if type __git_complete &>/dev/null; then
+    __git_complete mygit __git_main
+fi
+
+_complete_ollama() {
+    local cur prev words cword
+    _init_completion -n : || return
+
+    if [[ ${cword} -eq 1 ]]; then
+        COMPREPLY=($(compgen -W "serve create show run stop push pull list ps cp rm help" -- "${cur}"))
+    elif [[ ${cword} -eq 2 ]]; then
+        case "${prev}" in
+            (run|show|cp|rm|push|list)
+                WORDLIST=$((ollama list 2>/dev/null || echo "") | tail -n +2 | cut -d "	" -f 1)
+                COMPREPLY=($(compgen -W "${WORDLIST}" -- "${cur}"))
+                __ltrim_colon_completions "$cur"
+                ;;
+            (stop)
+                WORDLIST=$((ollama ps 2>/dev/null || echo "") | tail -n +2 | cut -d "	" -f 1)
+                COMPREPLY=($(compgen -W "${WORDLIST}" -- "${cur}"))
+                __ltrim_colon_completions "$cur"
+                ;;
+        esac
+    fi
+}
+complete -F _complete_ollama ollama
 
 if [ -f $(cd $(dirname $BASH_SOURCE) && pwd)/../local/bashrc/bash_completion ]; then
   source $(cd $(dirname $BASH_SOURCE) && pwd)/../local/bashrc/bash_completion

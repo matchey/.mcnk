@@ -17,11 +17,11 @@ HISTCONTROL=ignoreboth
 shopt -s histappend
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=10000
-HISTFILESIZE=20000
+HISTSIZE=100000
+HISTFILESIZE=1048576
 HISTTIMEFORMAT='%Y/%m/%d %H:%M:%S '
 cdignore=`echo cd{,' '{-,..*}}:`
-HISTIGNORE=ls:history*:${cdignore//: /:}:fg:rm*:pwd:hgrep*:pd:b:f:u:m:gm:vert:clear:pf:${HISTIGNORE}
+HISTIGNORE=?:??:???:ls:history*:${cdignore//: /:}:fg:sudo' 'rm' '*:rm' '*:pwd:hgrep*:pd:b:f:u' '*:m:lcd' '*:gm:vert:clear:pf:${HISTIGNORE}
 
 
 # check the window size after each command and, if necessary,
@@ -95,7 +95,7 @@ fi
 
 export LSCOLORS=gxfxcxdxbxegedabagacad
 # PS1="\[\033[36m\]\h:\W \u\$\[\033[0m\]"
-export PS1="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "
+# export PS1="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "
 
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
@@ -153,6 +153,9 @@ export PATH="/Applications/CMake.app/Contents/bin":"$PATH"
 #for rbrnv
 # eval "$(rbenv init -)"
 
+stty stop undef
+stty start undef
+
 # shpt settings
 shopt -s autocd
 # shopt -s cdable_vars
@@ -162,11 +165,34 @@ shopt -s autocd
 # shopt -s globstar
 # shopt -s nocaseglob
 # shopt -s nocasematch
+shopt -s histverify
+# shopt -s histreedit
+
+funcdir="$(cd $(dirname ${BASH_SOURCE:-$0}) && pwd)/functions"
+# [ -r /home/machinaka/.byobu/prompt ] && . /home/machinaka/.byobu/prompt   #byobu-prompt#
+
+if [ -f /usr/local/bin/wtp ]; then
+  eval "$(wtp completion bash)"
+fi
+
+# fzf settings
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+bind '"\C-r": reverse-search-history'
+bind -x '"\er": __fzf_history__'
+# source ${funcdir}/fzf_wrapper.sh
 
 #save last working directory when login shell exits
+if [ ! -f $HOME/.lastpwd ]; then
+  touch $HOME/.lastpwd
+fi
 source $HOME/.lastpwd
 export OLDPWD=$lastpwd
-trap $HOME/.mcnk/scripts/save_pwd.sh EXIT
+# A single EXIT trap for both handlers: a second `trap ... EXIT` would otherwise
+# overwrite the first, so they must share one handler. save_pwd runs first
+# (external script) and save_history_uniq is sourced (its `history` builtins must
+# run in this shell).
+#save last working directory and uniq history when login shell exits
+trap '$HOME/.mcnk/scripts/save_pwd.sh; . $HOME/.mcnk/scripts/save_history_uniq.sh' EXIT
 
 if [ -f $HOME/.mcnk/bashrc/bash_envs ]; then
     . $HOME/.mcnk/bashrc/bash_envs
@@ -188,7 +214,16 @@ if [ -f $HOME/.mcnk/local/bashrc/bashrc ]; then
     . $HOME/.mcnk/local/bashrc/bashrc
 fi
 
+# Per-pane bash history for tmux + tmux-resurrect (sets HISTFILE per pane and
+# registers a PROMPT_COMMAND hook). Sourced last so nothing overrides HISTFILE
+# or PROMPT_COMMAND afterwards. Pairs with save_history_uniq.sh (EXIT trap).
+if [ -f ${funcdir}/resurrect_pane_hist.sh ]; then
+    source ${funcdir}/resurrect_pane_hist.sh
+fi
+
 # if [[ "${VIM_EDITERM_SETUP}" != "" ]];then
 #   source "${VIM_EDITERM_SETUP}"
 # fi
+
+# git config --global core.pager 'less -SFRX'
 

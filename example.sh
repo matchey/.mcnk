@@ -1,15 +1,14 @@
 #!/bin/bash
 
+mcnkdir=$(cd $(dirname $0) && pwd)
 
-if [ ! -d "$(cd $(dirname $0) && pwd)/cmd" ]; then
-  mkdir "$(cd $(dirname $0) && pwd)/cmd"
-fi
-
-cd $(cd $(dirname $0) && pwd)
+cd ${mcnkdir}
 
 git update-index --skip-worktree .mcnk_envs
 
-mcnkdir=$(pwd)
+if [ ! -d "${mcnkdir}/cmd" ]; then
+  mkdir "${mcnkdir}/cmd"
+fi
 
 cd cmd
 
@@ -51,12 +50,13 @@ if [ ! -f ${HOME}/.lastpwd ]; then
   touch ${HOME}/.lastpwd
 fi
 
+mcnkdir_v='${MCNK_ROOT_DIR}'
 cat << EOS >> ~/.bashrc
 
 # mcnk
-if [ -f ${mcnkdir}/bashrc/bashrc ]; then
-    . ${mcnkdir}/bashrc/bashrc
+export MCNK_ROOT_DIR="${mcnkdir}"
+if [ -f ${mcnkdir_v}/bashrc/bashrc ]; then
+    . ${mcnkdir_v}/bashrc/bashrc
 fi
-
 EOS
 

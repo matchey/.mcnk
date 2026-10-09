@@ -1,4 +1,8 @@
 
 # export SCRIPT_PACKAGE_PATH="${HOME}/.mcnk/scripts":"${SCRIPT_PACKAGE_PATH}"
 export SCRIPT_PACKAGE_PATH="${HOME}/.mcnk/scripts"
+export VISUAL=vi
+export EDITOR=vi
+
+export PATH="$(go env GOPATH)/bin:$PATH"
 

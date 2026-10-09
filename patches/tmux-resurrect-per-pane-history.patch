@@ -1,0 +1,107 @@
+diff --git a/scripts/restore.sh b/scripts/restore.sh
+index 1a5e3f9..e2c49ff 100755
+--- a/scripts/restore.sh
++++ b/scripts/restore.sh
+@@ -120,7 +120,26 @@ tmux_default_command() {
+ }
+ 
+ pane_creation_command() {
+-	echo "cat '$(pane_contents_file "restore" "${1}:${2}.${3}")'; exec $(tmux_default_command)"
++	local hist_id="$4"
++	local env_prefix=""
++	# Inject the saved per-pane history id so the spawned shell reuses the same
++	# HISTFILE (see ~/.mcnk/bashrc/functions/resurrect_pane_hist.sh). `export`
++	# (not a VAR=val prefix) so it is inherited across the following `exec`.
++	[ -n "$hist_id" ] && env_prefix="export RESURRECT_HISTFILE_ID='$hist_id'; "
++	echo "${env_prefix}cat '$(pane_contents_file "restore" "${1}:${2}.${3}")'; exec $(tmux_default_command)"
++}
++
++# Path of the "coordinate -> history uuid" map written by save_pane_hist_map.sh.
++pane_hist_map_file() {
++	echo "$(resurrect_dir)/pane_hist_map"
++}
++
++# Look up the saved history uuid for a pane coordinate "session:window.pane".
++pane_histfile_id() {
++	local key="${1}:${2}.${3}"
++	local map="$(pane_hist_map_file)"
++	[ -f "$map" ] || return 0
++	awk -F'\t' -v k="$key" '$1 == k { print $2; exit }' "$map"
+ }
+ 
+ new_window() {
+@@ -128,10 +147,11 @@ new_window() {
+ 	local window_number="$2"
+ 	local dir="$3"
+ 	local pane_index="$4"
++	local hist_id="$5"
+ 	local pane_id="${session_name}:${window_number}.${pane_index}"
+ 	dir="${dir/#\~/$HOME}"
+ 	if is_restoring_pane_contents && pane_contents_file_exists "$pane_id"; then
+-		local pane_creation_command="$(pane_creation_command "$session_name" "$window_number" "$pane_index")"
++		local pane_creation_command="$(pane_creation_command "$session_name" "$window_number" "$pane_index" "$hist_id")"
+ 		tmux new-window -d -t "${session_name}:${window_number}" -c "$dir" "$pane_creation_command"
+ 	else
+ 		tmux new-window -d -t "${session_name}:${window_number}" -c "$dir"
+@@ -143,9 +163,10 @@ new_session() {
+ 	local window_number="$2"
+ 	local dir="$3"
+ 	local pane_index="$4"
++	local hist_id="$5"
+ 	local pane_id="${session_name}:${window_number}.${pane_index}"
+ 	if is_restoring_pane_contents && pane_contents_file_exists "$pane_id"; then
+-		local pane_creation_command="$(pane_creation_command "$session_name" "$window_number" "$pane_index")"
++		local pane_creation_command="$(pane_creation_command "$session_name" "$window_number" "$pane_index" "$hist_id")"
+ 		TMUX="" tmux -S "$(tmux_socket)" new-session -d -s "$session_name" -c "$dir" "$pane_creation_command"
+ 	else
+ 		TMUX="" tmux -S "$(tmux_socket)" new-session -d -s "$session_name" -c "$dir"
+@@ -162,9 +183,10 @@ new_pane() {
+ 	local window_number="$2"
+ 	local dir="$3"
+ 	local pane_index="$4"
++	local hist_id="$5"
+ 	local pane_id="${session_name}:${window_number}.${pane_index}"
+ 	if is_restoring_pane_contents && pane_contents_file_exists "$pane_id"; then
+-		local pane_creation_command="$(pane_creation_command "$session_name" "$window_number" "$pane_index")"
++		local pane_creation_command="$(pane_creation_command "$session_name" "$window_number" "$pane_index" "$hist_id")"
+ 		tmux split-window -t "${session_name}:${window_number}" -c "$dir" "$pane_creation_command"
+ 	else
+ 		tmux split-window -t "${session_name}:${window_number}" -c "$dir"
+@@ -181,12 +203,15 @@ restore_pane() {
+ 		if [ "$session_name" == "0" ]; then
+ 			restored_session_0_true
+ 		fi
++		# per-pane bash history id (see save_pane_hist_map.sh); injected into the
++		# spawned shell via pane_creation_command so Ctrl-r/Ctrl-p are restored.
++		local hist_id="$(pane_histfile_id "$session_name" "$window_number" "$pane_index")"
+ 		if pane_exists "$session_name" "$window_number" "$pane_index"; then
+ 			if is_restoring_from_scratch; then
+ 				# overwrite the pane
+ 				# happens only for the first pane if it's the only registered pane for the whole tmux server
+ 				local pane_id="$(tmux display-message -p -F "#{pane_id}" -t "$session_name:$window_number")"
+-				new_pane "$session_name" "$window_number" "$dir" "$pane_index"
++				new_pane "$session_name" "$window_number" "$dir" "$pane_index" "$hist_id"
+ 				tmux kill-pane -t "$pane_id"
+ 			else
+ 				# Pane exists, no need to create it!
+@@ -194,14 +219,17 @@ restore_pane() {
+ 				register_existing_pane "$session_name" "$window_number" "$pane_index"
+ 			fi
+ 		elif window_exists "$session_name" "$window_number"; then
+-			new_pane "$session_name" "$window_number" "$dir" "$pane_index"
++			new_pane "$session_name" "$window_number" "$dir" "$pane_index" "$hist_id"
+ 		elif session_exists "$session_name"; then
+-			new_window "$session_name" "$window_number" "$dir" "$pane_index"
++			new_window "$session_name" "$window_number" "$dir" "$pane_index" "$hist_id"
+ 		else
+-			new_session "$session_name" "$window_number" "$dir" "$pane_index"
++			new_session "$session_name" "$window_number" "$dir" "$pane_index" "$hist_id"
+ 		fi
+ 		# set pane title
+ 		tmux select-pane -t "$session_name:$window_number.$pane_index" -T "$pane_title"
++		# persist the history id on the pane as a fallback (covers the
++		# pane-contents-off path where env injection is not possible).
++		[ -n "$hist_id" ] && tmux set -p -t "$session_name:$window_number.$pane_index" @histfile_id "$hist_id" 2>/dev/null
+ 	done < <(echo "$pane")
+ }
+ 
