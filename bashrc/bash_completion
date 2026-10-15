@@ -44,9 +44,15 @@ complete -F _byobu byobu
 if type __git_complete &>/dev/null; then
     _mygit_completion() {
         local __git_diff_difftool_options="$__git_diff_difftool_options"
-        if [[ "${words[1]}" == diff ]]; then
-            __git_diff_difftool_options+=" --inline"
-        fi
+        local __git_diff_common_options="$__git_diff_common_options"
+        case "${words[1]}" in
+            diff)
+                __git_diff_difftool_options+=" --inline"
+                ;;
+            show|log)
+                __git_diff_common_options+=" --inline"
+                ;;
+        esac
         __git_main
     }
     __git_complete mygit _mygit_completion

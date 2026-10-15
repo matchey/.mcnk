@@ -1,9 +1,10 @@
 # git push の -f を --force-with-lease --force-if-includes に差し替え、
 # 本当に強制したい場合のみ -F (=--force) を使う運用にするラッパー。
 # `--` 以降の引数は解釈対象外としてそのまま git に渡す。
-# `git diff --inline` disables delta's side-by-side layout for that invocation.
+# `git {diff,show,log} --inline` disables delta's side-by-side layout for that invocation.
 mygit() {
-    if [[ "$1" == "diff" ]]; then
+    if [[ "$1" == "diff" || "$1" == "show" || "$1" == "log" ]]; then
+        local subcommand=$1
         shift
         local args=()
         local diff_config=()
@@ -27,7 +28,7 @@ mygit() {
                     ;;
             esac
         done
-        command git "${diff_config[@]}" diff "${args[@]}"
+        command git "${diff_config[@]}" "$subcommand" "${args[@]}"
         return
     fi
     if [[ "$1" != "push" ]]; then
