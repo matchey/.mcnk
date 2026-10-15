@@ -42,7 +42,15 @@ _byobu()
 complete -F _byobu byobu
 
 if type __git_complete &>/dev/null; then
-    __git_complete mygit __git_main
+    _mygit_completion() {
+        local __git_diff_difftool_options="$__git_diff_difftool_options"
+        if [[ "${words[1]}" == diff ]]; then
+            __git_diff_difftool_options+=" --inline"
+        fi
+        __git_main
+    }
+    __git_complete mygit _mygit_completion
+    __git_complete git _mygit_completion
 fi
 
 _complete_ollama() {
@@ -71,4 +79,3 @@ complete -F _complete_ollama ollama
 if [ -f $(cd $(dirname $BASH_SOURCE) && pwd)/../local/bashrc/bash_completion ]; then
   source $(cd $(dirname $BASH_SOURCE) && pwd)/../local/bashrc/bash_completion
 fi
-
