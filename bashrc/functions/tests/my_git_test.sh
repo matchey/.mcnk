@@ -32,6 +32,16 @@ assert_args '<git><diff><--unified>' diff --unified
 assert_args '<git><diff><--><--inline>' diff -- --inline
 assert_args '<git><-c><delta.side-by-side=false><diff><--><--inline>' \
     diff --inline -- --inline
+for subcommand in show log; do
+    assert_args "<git><$subcommand><HEAD>" "$subcommand" HEAD
+    assert_args "<git><-c><delta.side-by-side=false><$subcommand><HEAD>" \
+        "$subcommand" --inline HEAD
+    assert_args "<git><-c><delta.side-by-side=false><$subcommand><-p><-3><--><a b.txt>" \
+        "$subcommand" -p --inline -3 -- 'a b.txt'
+    assert_args "<git><$subcommand><--><--inline>" "$subcommand" -- --inline
+    assert_args "<git><-c><delta.side-by-side=false><$subcommand><HEAD>" \
+        "$subcommand" --inline HEAD --inline
+done
 assert_args '<git><push><--force-with-lease><--force-if-includes><origin><main>' \
     push -f origin main
 assert_args '<git><push><--force><origin><main>' push -F origin main
@@ -39,12 +49,14 @@ assert_args '<git><push><--force><origin>' push -f -F origin
 assert_args '<git><push><--><-f>' push -- -f
 
 git_status=23
-if mygit diff --inline >/dev/null; then
-    printf 'Expected Git exit status to propagate\n' >&2
-    exit 1
-else
-    status=$?
-    [[ "$status" == 23 ]]
-fi
+for subcommand in diff show log; do
+    if mygit "$subcommand" --inline >/dev/null; then
+        printf 'Expected Git exit status to propagate\n' >&2
+        exit 1
+    else
+        status=$?
+        [[ "$status" == 23 ]]
+    fi
+done
 
 printf 'mygit tests passed\n'

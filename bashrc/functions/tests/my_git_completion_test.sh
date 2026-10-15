@@ -34,10 +34,20 @@ assert_completion 1 --inline mygit diff --inl
 assert_completion 1 --inline git diff --cached --inl
 assert_completion 1 --cached git diff --ca
 assert_completion 1 --short git status --sh
-assert_completion 0 --inline git show --inl
+for subcommand in show log; do
+    assert_completion 1 --inline git "$subcommand" --inl
+    assert_completion 1 --inline mygit "$subcommand" --inl
+    assert_completion 1 --inline git "$subcommand" -p --inl
+    assert_completion 1 --stat git "$subcommand" --sta
+    assert_completion 0 --inline git "$subcommand" -- --inl
+done
+assert_completion 1 oneline git show --format=onel
+assert_completion 1 short git log --date=sh
 assert_completion 0 --inline git difftool --inl
 assert_completion 0 --inline git diff -- --inl
 
 source "$(dirname "${BASH_SOURCE[0]}")/../../bash_completion"
 assert_completion 1 --inline git diff --inl
+assert_completion 1 --inline git show --inl
+assert_completion 1 --inline git log --inl
 printf 'mygit completion tests passed\n'
