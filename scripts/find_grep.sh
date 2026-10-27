@@ -40,5 +40,5 @@ fi
 
 ESC=$(printf '\033')
 # find . -maxdepth $maxdepth -name "*" -type f | xargs fgrep -I -i "$search_word" --color 2>/dev/null
-find . -maxdepth $maxdepth -name "*" -type f 2>/dev/null | xargs grep $context -I -i "${search_word}" -n --color=always --group-separator="GREP_SEP_LINE"  2>/dev/null | sed "s/GREP_SEP_LINE/\n${ESC}[32m-=-=-=-=-=-=-=-=-=-${ESC}[m\n/g" | grep -i -E "|.{,50}${search_word}.{,50}" | cut -c 1-500 2>/dev/null
+find . -maxdepth $maxdepth -name "*" -type f 2>/dev/null | xargs grep $context -I -ia "${search_word}" -n --color=always --group-separator="GREP_SEP_LINE"  2>/dev/null | sed "s/GREP_SEP_LINE/\n${ESC}[32m-=-=-=-=-=-=-=-=-=-${ESC}[m\n/g" | grep -ia -E "|.{,50}${search_word}.{,50}" | cut -c 1-500 2>/dev/null
 
