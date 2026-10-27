@@ -99,6 +99,14 @@ api.mapkey('p', '#8Open clipboard URL in a new tab', oncePerKeypress(openClipboa
 // Match only the exported HTTPS origins; the site toggle cannot override this.
 settings.blocklistPattern = /^https:\/\/(?:sushida\.net|o24\.works)(?::443)?(?:\/|$)/i;
 
+// reveal.js slides: pass reveal's unmodified default keys through to the page.
+// reveal ignores most Shift/Ctrl combinations, so J/K/H/L and Ctrl mappings stay usable.
+const revealSlides = /^https:\/\/dev-notes-and-slides-078cf8\.pages\.misty\.sony\.co\.jp(?::443)?\/topics\//i;
+// Unmapping g drops every g* mapping, so copy gU first.
+api.map('U', 'gU', revealSlides);
+['h', 'j', 'k', 'l', 'n', 'p', 'f', 'a', 'b', 'v', 'g', 's', 'o', '.', '/', ':', ';', '?']
+    .forEach((key) => api.unmap(key, revealSlides));
+
 settings.theme = `
 .sk_theme {
     font-family: Input Sans Condensed, Charcoal, sans-serif;
