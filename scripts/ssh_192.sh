@@ -9,7 +9,7 @@ fi
 
 Shellcmd=$1
 
-filename="$(cd $(dirname $0) && cd .. && pwd)/.mcnk_envs"
+filename="$(cd $(dirname $0) && cd .. && pwd)/local/.mcnk_envs"
 
 if [ -f ${filename} ]; then
 	. ${filename}

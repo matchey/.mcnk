@@ -4,8 +4,6 @@ mcnkdir=$(cd $(dirname $0) && pwd)
 
 cd ${mcnkdir}
 
-git update-index --skip-worktree .mcnk_envs
-
 if [ ! -d "${mcnkdir}/cmd" ]; then
   mkdir "${mcnkdir}/cmd"
 fi

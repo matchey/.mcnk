@@ -151,7 +151,6 @@ alias gpuon='unset CUDA_VISIBLE_DIVICES'
 alias color='for COLOR in {1..255}; do echo -en "\e[38;5;${COLOR}m${COLOR} "; done; echo;'
 alias nocolor="sed 's/\x1b\[[0-9;]*[mG]//g'"
 
-
 function cmk(){
   cpath=$(pwd)
   cd ~/ros_catkin_ws
