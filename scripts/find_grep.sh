@@ -1,49 +1,41 @@
 #!/bin/bash
+# usage: search <word...> [depth] [-c|-C]
+# Searches files under the current directory up to <depth> levels (default 1).
+# The pattern is a regex (ag: PCRE, grep: ERE) and is matched smart-case.
 
-search_word=$1
-context=""
-if [ $# -eq 0 ] ; then
-	echo set searched word
-	echo usage: search \(searched word\) \(depth\)
-	exit
-elif [ $# -eq 1 ] ; then
-	maxdepth=1
-elif [ $# -eq 2 ] ; then
-	if expr "$2" : '[0-9]*' > /dev/null ; then
-    maxdepth=$2
-	else
-		maxdepth=1
-		search_word="$1 $2"
-		echo \"$search_word\"
-	fi
-else
-  last="${@:$#:1}"
-	if expr "${*:$#}" : '[0-9]*' > /dev/null ; then
-    maxdepth=${*:$#}
-		search_word="${*:1:$#-1}"
-  elif [ $last == '-c' ] || [ $last == '-C' ]; then
-		maxdepth="${*:2:$#-2}"
-		search_word="${*:1:$#-2}"
-    context=-3
-	else
-		maxdepth=1
-		search_word="$*"
-		echo \"$search_word\"
-	fi
-fi
+usage() {
+  echo "usage: $(basename "$0") <word...> [depth] [-c|-C]" >&2
+  exit 1
+}
 
-if [ -z "$search_word" ]; then
-	echo set searched word
-	echo usage: search \(searched word\) \(depth\)
-	exit
+args=("$@")
+context_opt=()
+case "${args[-1]-}" in
+  -c|-C) context_opt=(-C 3); unset 'args[-1]' ;;
+esac
+maxdepth=1
+# A lone numeric argument is the search word, not the depth.
+if [ ${#args[@]} -ge 2 ] && [[ ${args[-1]} =~ ^[0-9]+$ ]]; then
+  maxdepth=$((10#${args[-1]}))
+  unset 'args[-1]'
 fi
+search_word="${args[*]}"
+
+[ -n "$search_word" ] || usage
+if [ "$maxdepth" -lt 1 ]; then
+  echo "depth must be 1 or greater" >&2
+  usage
+fi
+[ ${#args[@]} -ge 2 ] && echo "\"$search_word\"" >&2
 
 if command -v ag > /dev/null ; then
-	ag --hidden --skip-vcs-ignores --ignore .git --color --color-match '01;38;5;202' --color-path '01;38;5;132' --color-line-number 32 --depth $((maxdepth-1)) -W 500 ${context:+-C 3} -- "$search_word"
+  ag --hidden --skip-vcs-ignores --ignore .git --smart-case --color --color-match '01;38;5;202' --color-path '01;38;5;132' --color-line-number 32 --depth $((maxdepth-1)) -W 500 "${context_opt[@]}" -- "$search_word"
 else
-	ESC=$(printf '\033')
-	# find . -maxdepth $maxdepth -name "*" -type f | xargs fgrep -I -i "$search_word" --color 2>/dev/null
-	find . -maxdepth $maxdepth -name "*" -type f 2>/dev/null | xargs grep $context -I -ia "${search_word}" -n --color=always --group-separator="GREP_SEP_LINE"  2>/dev/null | sed "s/GREP_SEP_LINE/\n${ESC}[32m-=-=-=-=-=-=-=-=-=-${ESC}[m\n/g" | grep -ia -E "|.{,50}${search_word}.{,50}" | cut -c 1-500 2>/dev/null
+  ESC=$(printf '\033')
+  case_opt=-i
+  [[ $search_word =~ [[:upper:]] ]] && case_opt=
+  find . -maxdepth "$maxdepth" -name .git -prune -o -type f -print0 \
+    | xargs -0 -r grep -s -I -H -n -E $case_opt "${context_opt[@]}" --color=always --group-separator="GREP_SEP_LINE" -e "$search_word" \
+    | sed "s/GREP_SEP_LINE/\\n${ESC}[32m-=-=-=-=-=-=-=-=-=-${ESC}[m\\n/g" \
+    | cut -c 1-500 | sed "s/\$/${ESC}[m/"
 fi
-
-
