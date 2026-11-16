@@ -42,6 +42,8 @@ alias f='f=1;if [[ $l -le 1 ]]; then l=1;f=;else ((l=l-1));cd;fi'
 alias cd='((l2=l+1));if [[ $f -eq 1 ]];then f=;t=`echo $h|cut -f$l -d:`;else f2=1;if [ "$la" != "$PWD" ]; then h=$PWD:`echo $h|cut -f$l2- -d:`;la=$PWD;fi;l=0;t=;fi;cd $t'
 source ${funcdir}/cd_from_list.sh
 alias lcd='list_cd'
+source ${funcdir}/gitrepo_cd.sh
+alias gcd='ghq_cd'
 alias m='MARKEDPWD=$PWD'
 # alias gm='cd $MARKEDPWD'
 function gm(){
@@ -99,7 +101,8 @@ alias vert="vimterm 2"
 source ${funcdir}/vim_globstar.sh
 alias vimg="vim_globstar"
 
-alias history="history | less -SFRX +G"
+# alias history="history | less -SFRX +G"
+alias hist="history | less -SFRX +G"
 alias hgrep="history_uniq | grep"
 alias history_uniq=". ${HOME}/.mcnk/scripts/history_uniq.sh | nl | less -SFRX +G"
 
