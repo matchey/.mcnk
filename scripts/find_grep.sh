@@ -1,9 +1,9 @@
 #!/bin/bash
-# usage: search <word...> [depth] [-c|-C] [ag options...]
+# usage: ftext <word...> [depth] [-c|-C] [ag options...]
 # Searches files under the current directory up to <depth> levels (default 1).
 # The pattern is a regex (ag: PCRE, grep: ERE) and is matched smart-case.
 # Arguments from the first one starting with "-" (except the first word) are
-# passed to ag; -c/-C among them mean "-C 3". e.g. search WORD 9 --ignore logs
+# passed to ag; -c/-C among them mean "-C 3". e.g. ftext WORD 9 --ignore logs
 
 usage() {
   echo "usage: $(basename "$0") <word...> [depth] [-c|-C] [ag options...]" >&2

@@ -30,7 +30,9 @@ ln -s ../scripts/ls_full.sh lf
 
 ln -s ../scripts/showMyIP.sh mip
 
-ln -s ../scripts/find_grep.sh search
+ln -s ../scripts/find_grep.sh ftext
+
+ln -s ../scripts/find_name.sh fname
 
 ln -s ../scripts/idle_handle_mouse.sh expand_mouse
 
