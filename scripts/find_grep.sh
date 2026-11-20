@@ -38,6 +38,7 @@ if [ "$maxdepth" -lt 1 ]; then
 fi
 [ ${#args[@]} -ge 2 ] && echo "\"$search_word\"" >&2
 
+# sudo apt install silversearcher-ag
 if command -v ag > /dev/null ; then
   ag --hidden --skip-vcs-ignores --ignore .git --smart-case --color --color-match '01;38;5;202' --color-path '01;38;5;132' --color-line-number 32 --depth $((maxdepth-1)) -W 500 "${context_opt[@]}" "${extra_opts[@]}" -- "$search_word"
 else

@@ -52,6 +52,21 @@ if type __git_complete &>/dev/null; then
             show|log)
                 __git_diff_common_options+=" --inline"
                 ;;
+            branch)
+                # Older Git lacks these options; mygit emulates them.
+                local __gitcomp_builtin_branch="${__gitcomp_builtin_branch-}"
+                if [[ -z "$__gitcomp_builtin_branch" ]]; then
+                    __gitcomp_builtin_branch=" $(__git branch --git-completion-helper) "
+                fi
+                if [[ "$__gitcomp_builtin_branch" != *" --delete-merged "* ]]; then
+                    # __gitcomp hides options after the " -- " separator.
+                    if [[ "$__gitcomp_builtin_branch" == *" -- "* ]]; then
+                        __gitcomp_builtin_branch=${__gitcomp_builtin_branch/ -- / --delete-merged --dry-run -- }
+                    else
+                        __gitcomp_builtin_branch+=" --delete-merged --dry-run "
+                    fi
+                fi
+                ;;
         esac
         __git_main
     }

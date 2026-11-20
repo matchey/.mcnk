@@ -176,10 +176,13 @@ if [ -f /usr/local/bin/wtp ]; then
 fi
 
 # fzf settings
+# git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+# ~/.fzf/install
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 bind '"\C-r": reverse-search-history'
 bind -x '"\er": __fzf_history__'
 # source ${funcdir}/fzf_wrapper.sh
+#
 
 #save last working directory when login shell exits
 if [ ! -f $HOME/.lastpwd ]; then

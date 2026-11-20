@@ -28,6 +28,7 @@ for arg in "$@"; do
 done
 
 # Ubuntu's fd-find package installs the binary as fdfind.
+# sudo apt install fd-find
 fd_bin=$(command -v fd || command -v fdfind)
 if [ -n "$fd_bin" ]; then
   "$fd_bin" --hidden --no-ignore --exclude .git --glob \

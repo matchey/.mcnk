@@ -45,6 +45,11 @@ assert_completion 1 oneline git show --format=onel
 assert_completion 1 short git log --date=sh
 assert_completion 0 --inline git difftool --inl
 assert_completion 0 --inline git diff -- --inl
+assert_completion 1 --delete-merged git branch --delete-m
+assert_completion 1 --delete-merged mygit branch --delete-m
+assert_completion 1 --dry-run git branch --dry
+assert_completion 1 --merged git branch --merg
+assert_completion 0 --delete-merged git status --delete-m
 
 source "$(dirname "${BASH_SOURCE[0]}")/../../bash_completion"
 assert_completion 1 --inline git diff --inl
