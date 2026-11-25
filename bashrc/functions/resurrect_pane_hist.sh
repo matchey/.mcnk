@@ -2,8 +2,10 @@
 # Per-pane bash history for tmux + tmux-resurrect.
 #
 # Each tmux pane gets a stable uuid (stored in the pane option @histfile_id) and
-# its own HISTFILE (~/.bash_history.d/<uuid>), so Ctrl-r / Ctrl-p show only that
-# pane's own history. The uuid survives tmux-resurrect save/restore: on restore,
+# its own HISTFILE (~/.bash_history.d/<uuid>). On startup the shell loads the
+# shared archive followed by that pane's own history (deduplicated keep-last), so
+# a new pane starts with all history while the pane's own commands come first on
+# Ctrl-r / Ctrl-p. The uuid survives tmux-resurrect save/restore: on restore,
 # tmux-resurrect's scripts/restore.sh injects it via $RESURRECT_HISTFILE_ID.
 #
 # The dedup'd archive (~/.bash_history_uniq) keeps working unchanged: on every
@@ -48,14 +50,30 @@ if [ -n "$TMUX" ]; then
   # restore) would write its uuid onto window 0 and share a single HISTFILE.
   tmux set -p ${TMUX_PANE:+-t "$TMUX_PANE"} @histfile_id "$__rhist_id" 2>/dev/null
   export HISTFILE="$__RESURRECT_HIST_DIR/$__rhist_id"
-  # bash already read the default HISTFILE at startup; swap to this pane's.
+  # bash loads $HISTFILE *after* the startup files, so at startup it will load
+  # this pane's file by itself; we only prepend the shared archive minus the
+  # pane's entries (keep-last), so a new pane is not empty and Up-arrow still
+  # reaches the pane's own commands first. When re-sourced later (e.g. by
+  # backfill_pane_hist_id.sh) bash won't reload, so load the pane file here too.
+  # A merged temp file keeps HISTFILE as the pane file; `history -a` never
+  # re-writes lines loaded via `history -r`.
   # `builtin` is mandatory: bash_aliases defines `alias history='history | less
   # -SFRX +G'` and this file is sourced *after* it, so a bare `history -c` would
   # expand to `history | less -SFRX +G -c`. That leaves less' `~` filler lines on
   # the pane and silently skips loading the history.
   builtin history -c
-  [ -r "$HISTFILE" ] && builtin history -r "$HISTFILE"
-  unset __rhist_id
+  __rhist_tmp="$(mktemp "${TMPDIR:-/tmp}/.resurrect_hist_load.$$.XXXXXX" 2>/dev/null)"
+  if [ -n "$__rhist_tmp" ] && \
+     "$HOME/.mcnk/scripts/merge_history.sh" -x "$HISTFILE" "$__RESURRECT_HIST_ARCHIVE" > "$__rhist_tmp"; then
+    builtin history -r "$__rhist_tmp"
+  fi
+  [ -n "$__rhist_tmp" ] && \rm -f "$__rhist_tmp"
+  # Not exported: a nested bash is a fresh startup and must take the first path.
+  if [ -n "${__RESURRECT_HIST_STARTED:-}" ] && [ -r "$HISTFILE" ]; then
+    builtin history -r "$HISTFILE"
+  fi
+  __RESURRECT_HIST_STARTED=1
+  unset __rhist_id __rhist_tmp
 fi
 unset -f __resurrect_hist_id
 unset RESURRECT_HISTFILE_ID

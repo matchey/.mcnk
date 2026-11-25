@@ -33,6 +33,7 @@ git diff scripts/restore.sh > ~/.mcnk/patches/tmux-resurrect-per-pane-history.pa
 ## 関連ファイル（プラグイン外・更新の影響を受けない）
 
 - `~/.mcnk/bashrc/functions/resurrect_pane_hist.sh` … pane ごと HISTFILE と同期
+- `~/.mcnk/scripts/merge_history.sh` … 起動時に読み込む uniq アーカイブ（pane 履歴との重複を除外）を生成
 - `~/.mcnk/scripts/save_pane_hist_map.sh` … save hook（座標→uuid マップ）
 - `~/.mcnk/scripts/backfill_pane_hist_id.sh` … 稼働中 pane の `@histfile_id` 一括修復（任意）
 - `~/.mcnk/scripts/save_history_uniq.sh` … uniq アーカイブの dedup 圧縮
@@ -40,7 +41,7 @@ git diff scripts/restore.sh > ~/.mcnk/patches/tmux-resurrect-per-pane-history.pa
 
 ## 落とし穴（過去に踏んだもの）
 
-`resurrect_pane_hist.sh` を編集するときは以下の 2 点に注意する。どちらも
+`resurrect_pane_hist.sh` を編集するときは以下の 3 点に注意する。いずれも
 エラーを出さずに壊れるため気付きにくい。
 
 ### 1. `history` は必ず `builtin history` と書く
@@ -51,7 +52,7 @@ git diff scripts/restore.sh > ~/.mcnk/patches/tmux-resurrect-per-pane-history.pa
 
 - `less -X` は終了時に画面を復元しないため、pane に `~` の埋め草行と履歴ファイルの
   中身が残る
-- 本来の `history -r "$HISTFILE"` が実行されず、pane 別履歴が読み込まれない
+- 本来の `history -r` が実行されず、履歴が読み込まれない
 
 ### 2. `tmux set -p` / `show -pqv` には `-t "$TMUX_PANE"` を付ける
 
@@ -59,6 +60,12 @@ git diff scripts/restore.sh > ~/.mcnk/patches/tmux-resurrect-per-pane-history.pa
 対象になる。byobu 起動や resurrect restore のように pane が一斉生成される場面では、
 全 shell の uuid が window 0 の pane に上書きされ、同一セッションの全 pane が
 1 つの HISTFILE を共有してしまう。
+
+### 3. bash は startup ファイルの**後**に `$HISTFILE` を読み込む
+
+起動時に `history -r "$HISTFILE"` を自前で行うと、その後 bash が同じファイルを
+もう一度読み込み、pane 履歴が二重になる。起動時は pane ファイルの読み込みを bash に
+任せ、再 source 時（`backfill_pane_hist_id.sh` など）だけ自前で読み込む。
 
 なお `scripts/restore.sh` 側は元々 `-t` 付きで書かれているため、このパッチ自体に
 変更は不要（上記はいずれもプラグイン外のファイルの問題）。
