@@ -1,8 +1,10 @@
 #
-# Per-pane bash history for tmux + tmux-resurrect.
+# Per-pane bash history for tmux + tmux-resurrect, and for Herdr.
 #
 # Each tmux pane gets a stable uuid (stored in the pane option @histfile_id) and
-# its own HISTFILE (~/.bash_history.d/<uuid>). On startup the shell loads the
+# its own HISTFILE (~/.bash_history.d/<uuid>). In Herdr (which strips $TMUX from
+# pane environments) the pane-hist plugin of ~/.herdr maps the restored pane id
+# to ~/.bash_history.d/herdr/<uuid> instead. On startup the shell loads the
 # shared archive followed by that pane's own history (deduplicated keep-last), so
 # a new pane starts with all history while the pane's own commands come first on
 # Ctrl-r / Ctrl-p. The uuid survives tmux-resurrect save/restore: on restore,
@@ -43,6 +45,11 @@ __resurrect_hist_id() {
   fi
 }
 
+__RESURRECT_HERDR_HELPER="$HOME/.herdr/plugins/pane-hist/pane-hist"
+
+# The innermost multiplexer wins: Herdr unsets $TMUX in its panes, and tmux in a
+# Herdr pane sets it again.
+__rhist_file=
 if [ -n "$TMUX" ]; then
   __rhist_id="$(__resurrect_hist_id)"
   # Persist on the pane so future resurrect saves can capture it.
@@ -51,7 +58,16 @@ if [ -n "$TMUX" ]; then
   # every shell spawned during bulk pane creation (byobu startup, resurrect
   # restore) would write its uuid onto window 0 and share a single HISTFILE.
   tmux set -p ${TMUX_PANE:+-t "$TMUX_PANE"} @histfile_id "$__rhist_id" 2>/dev/null
-  export HISTFILE="$__RESURRECT_HIST_DIR/$__rhist_id"
+  __rhist_file="$__RESURRECT_HIST_DIR/$__rhist_id"
+elif [ -n "$HERDR_PANE_ID" ] && [ -x "$__RESURRECT_HERDR_HELPER" ]; then
+  # Resolved once: a pane moved later keeps this shell but gets a new pane id,
+  # and the plugin rekeys the map so the file stays with the pane.
+  __rhist_file="$("$__RESURRECT_HERDR_HELPER" histfile)" ||
+    echo "resurrect_pane_hist: pane-hist failed; using the default HISTFILE" >&2
+fi
+
+if [ -n "$__rhist_file" ]; then
+  export HISTFILE="$__rhist_file"
   # bash loads $HISTFILE *after* the startup files, so at startup it will load
   # this pane's file by itself; we only prepend the shared archive minus the
   # pane's entries (keep-last), so a new pane is not empty and Up-arrow still
@@ -75,8 +91,8 @@ if [ -n "$TMUX" ]; then
     builtin history -r "$HISTFILE"
   fi
   __RESURRECT_HIST_STARTED=1
-  unset __rhist_id __rhist_tmp
 fi
+unset __rhist_id __rhist_tmp __rhist_file __RESURRECT_HERDR_HELPER
 unset -f __resurrect_hist_id
 unset RESURRECT_HISTFILE_ID
 

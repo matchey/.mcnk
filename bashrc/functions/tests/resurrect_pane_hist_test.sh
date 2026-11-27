@@ -53,7 +53,7 @@ EOF
 
 # Feed commands line by line to a real interactive bash so PROMPT_COMMAND runs.
 run_shell() {
-    env -u TMUX HOME="$home" TMPDIR="$work" \
+    env -u TMUX -u HERDR_PANE_ID HOME="$home" TMPDIR="$work" \
         script -qec "bash --rcfile '$work/rc' -i" /dev/null <<<"$1" >/dev/null
 }
 
@@ -91,5 +91,44 @@ reset_files
 run_shell $'echo n1\necho n2\nhistory 1 >/dev/null\nexit'
 assert_eq "plain history use keeps every flushed line" \
     $'echo n1\necho n2\nhistory 1 >/dev/null\nexit' "$(commands_in "$home/.bash_history")"
+
+# --- Herdr: HISTFILE comes from the pane-hist helper ---------------------------
+
+helper="$home/.herdr/plugins/pane-hist/pane-hist"
+pane_file="$home/.bash_history.d/herdr/pane-uuid"
+mkdir -p "${helper%/*}" "${pane_file%/*}"
+
+run_herdr_shell() {
+    env -u TMUX HERDR_PANE_ID=w1:p1 HOME="$home" TMPDIR="$work" \
+        script -qec "bash --rcfile '$work/rc' -i" /dev/null <<<"$1" >/dev/null
+}
+
+printf '#!/bin/sh\necho "%s"\n' "$pane_file" > "$helper"
+chmod +x "$helper"
+reset_files
+printf '#1000000002\necho pane-own\n' > "$pane_file"
+run_herdr_shell $'echo in-herdr\nexit'
+assert_eq "herdr: commands go to the pane file from the helper" \
+    $'echo pane-own\necho in-herdr\nexit' "$(commands_in "$pane_file")"
+assert_eq "herdr: the default HISTFILE is untouched" "" "$(commands_in "$home/.bash_history")"
+assert_eq "herdr: the archive still receives the commands" \
+    $'echo other-session\necho SECRET\necho in-herdr\nexit' \
+    "$(commands_in "$home/.bash_history_uniq")"
+
+run_herdr_shell $'fc -ln -3 -1 > "$TMPDIR/loaded"\nexit'
+assert_eq "herdr: startup loads the archive, then the pane's own history" \
+    $'echo pane-own\necho in-herdr\nexit' "$(sed 's/^[[:space:]]*//' "$work/loaded")"
+
+printf '#!/bin/sh\nexit 1\n' > "$helper"
+reset_files
+run_herdr_shell $'echo helper-failed\nexit'
+assert_eq "herdr: a failing helper falls back to the default HISTFILE" \
+    $'echo helper-failed\nexit' "$(commands_in "$home/.bash_history")"
+
+rm -f "$helper"
+reset_files
+run_herdr_shell $'echo no-helper\nexit'
+assert_eq "herdr: without the helper the default HISTFILE is used" \
+    $'echo no-helper\nexit' "$(commands_in "$home/.bash_history")"
 
 echo "resurrect_pane_hist tests passed"

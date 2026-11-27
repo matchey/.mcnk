@@ -217,9 +217,10 @@ if [ -f $HOME/.mcnk/local/bashrc/bashrc ]; then
     . $HOME/.mcnk/local/bashrc/bashrc
 fi
 
-# Per-pane bash history for tmux + tmux-resurrect (sets HISTFILE per pane and
-# registers a PROMPT_COMMAND hook). Sourced last so nothing overrides HISTFILE
-# or PROMPT_COMMAND afterwards. Pairs with save_history_uniq.sh (EXIT trap).
+# Per-pane bash history for tmux + tmux-resurrect and Herdr (sets HISTFILE per
+# pane and registers a PROMPT_COMMAND hook). Sourced last so nothing overrides
+# HISTFILE or PROMPT_COMMAND afterwards. Pairs with save_history_uniq.sh (EXIT
+# trap).
 if [ -f ${funcdir}/resurrect_pane_hist.sh ]; then
     source ${funcdir}/resurrect_pane_hist.sh
 fi
