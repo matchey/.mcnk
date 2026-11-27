@@ -11,6 +11,8 @@
 # The dedup'd archive (~/.bash_history_uniq) keeps working unchanged: on every
 # prompt the new history lines are appended to both the pane HISTFILE and the
 # archive, and save_history_uniq.sh (EXIT trap) still compacts it by size.
+# Because lines are persisted at once, the `history` function below makes
+# `history -c` / `history -d` also remove this shell's lines from both files.
 
 # interactive shells only
 case $- in
@@ -78,6 +80,16 @@ fi
 unset -f __resurrect_hist_id
 unset RESURRECT_HISTFILE_ID
 
+# Shared with save_history_uniq.sh: every append and rewrite of the archive or a
+# pane HISTFILE holds this lock, so a rewrite's `mv` can't drop a concurrent
+# append.
+__RESURRECT_HIST_LOCK="$HOME/.bash_history_uniq.lock"
+
+# Entries this shell has flushed to disk, kept in memory only so `history -c/-d`
+# can retract them (see `history` below). Reset on (re-)source: the list was
+# just cleared and reloaded, which starts a new baseline.
+__resurrect_hist_written=
+
 # Per-prompt: flush new history lines to the (pane) HISTFILE and the archive.
 # `history -a` writes only lines entered since the last append, so this never
 # duplicates and never re-writes lines loaded via `history -r`.
@@ -86,8 +98,76 @@ __resurrect_hist_sync() {
   : > "$__resurrect_hist_tmp" 2>/dev/null || return
   builtin history -a "$__resurrect_hist_tmp"
   [ -s "$__resurrect_hist_tmp" ] || return
-  [ -n "$HISTFILE" ] && cat "$__resurrect_hist_tmp" >> "$HISTFILE"
-  cat "$__resurrect_hist_tmp" >> "$__RESURRECT_HIST_ARCHIVE"
+  local chunk
+  IFS= read -rd '' chunk < "$__resurrect_hist_tmp"
+  __resurrect_hist_written+="$chunk"
+  {
+    # On lock timeout append anyway: O_APPEND never corrupts, and losing the
+    # line would be worse than a rewrite racing with it.
+    flock -w 2 9
+    [ -n "$HISTFILE" ] && cat "$__resurrect_hist_tmp" >> "$HISTFILE"
+    cat "$__resurrect_hist_tmp" >> "$__RESURRECT_HIST_ARCHIVE"
+  } 9>"$__RESURRECT_HIST_LOCK"
+}
+
+# Per-prompt flushing persists each line before `history -c` / `history -d` can
+# drop it, so after those options remove from disk the flushed entries that are
+# no longer in the history list. Only this shell's own entries are touched; an
+# entry already compacted away from the archive (keep-first by text) can't be
+# retracted there.
+__resurrect_hist_retract() {
+  [ -n "$__resurrect_hist_written" ] || return 0
+  local dir
+  dir="$(mktemp -d "${TMPDIR:-/tmp}/.resurrect_hist_retract.$$.XXXXXX")" || return 1
+  local subtract="$HOME/.mcnk/scripts/subtract_history.sh"
+  printf '%s' "$__resurrect_hist_written" > "$dir/written"
+  builtin history -w "$dir/list"
+  "$subtract" "$dir/list" "$dir/written" > "$dir/removed"
+  if [ ! -s "$dir/removed" ]; then
+    \rm -rf "$dir"
+    return 0
+  fi
+  local status=0 f t
+  {
+    if flock -w 2 9; then
+      for f in "$HISTFILE" "$__RESURRECT_HIST_ARCHIVE"; do
+        [ -n "$f" ] && [ -f "$f" ] || continue
+        t="$(mktemp "$f.XXXXXX")" || { status=1; continue; }
+        "$subtract" "$dir/removed" "$f" > "$t" && \mv -f "$t" "$f" || { \rm -f "$t"; status=1; }
+      done
+    else
+      status=1
+    fi
+  } 9>"$__RESURRECT_HIST_LOCK"
+  if [ "$status" -eq 0 ]; then
+    __resurrect_hist_written="$("$subtract" "$dir/removed" "$dir/written"; printf x)"
+    __resurrect_hist_written="${__resurrect_hist_written%x}"
+  else
+    echo "history: could not remove deleted entries from saved history files" >&2
+  fi
+  \rm -rf "$dir"
+  return "$status"
+}
+
+history() {
+  local arg retract=0
+  for arg in "$@"; do
+    case $arg in
+      --) break ;;
+      -*[cd]*) retract=1; break ;;
+      -*) ;;
+      *) break ;;
+    esac
+  done
+  [ "$retract" -eq 1 ] || { builtin history "$@"; return; }
+  # Flush first so the "lines already appended" counter equals the list length.
+  # Deleting flushed entries leaves that counter too high, which would make the
+  # next `history -a` skip new lines; with nothing pending, appending to
+  # /dev/null resets it safely.
+  __resurrect_hist_sync
+  builtin history "$@" || return
+  builtin history -a /dev/null
+  __resurrect_hist_retract
 }
 case ";${PROMPT_COMMAND};" in
   *";__resurrect_hist_sync;"*) ;;

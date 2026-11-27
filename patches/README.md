@@ -34,6 +34,7 @@ git diff scripts/restore.sh > ~/.mcnk/patches/tmux-resurrect-per-pane-history.pa
 
 - `~/.mcnk/bashrc/functions/resurrect_pane_hist.sh` … pane ごと HISTFILE と同期
 - `~/.mcnk/scripts/merge_history.sh` … 起動時に読み込む uniq アーカイブ（pane 履歴との重複を除外）を生成
+- `~/.mcnk/scripts/subtract_history.sh` … `history -c` / `-d` で消した自 shell の行を履歴ファイルから除去
 - `~/.mcnk/scripts/save_pane_hist_map.sh` … save hook（座標→uuid マップ）
 - `~/.mcnk/scripts/backfill_pane_hist_id.sh` … 稼働中 pane の `@histfile_id` 一括修復（任意）
 - `~/.mcnk/scripts/save_history_uniq.sh` … uniq アーカイブの dedup 圧縮
