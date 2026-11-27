@@ -103,7 +103,7 @@ alias vimg="vim_globstar"
 
 # alias history="history | less -SFRX +G"
 alias hist="history | less -SFRX +G"
-alias hgrep="history_uniq | grep"
+alias hgrep="history_uniq | grep -a"
 alias history_uniq=". ${HOME}/.mcnk/scripts/history_uniq.sh | nl | less -SFRX +G"
 
 alias off="xset dpms force standby"
